@@ -35,7 +35,6 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen, s
     const [checkboxs, setCheckboxs] = useState(initiaData ? Opportunities(initiaData.opportunities) : CHECKBOXES);
 
     useEffect(() => {
-        console.log(name, email, phone);
     }, [name, email, phone]);
 
     useEffect(() => {}, [checkboxs]);
@@ -60,7 +59,6 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen, s
                 checked: e.target.checked,
             };
         });
-        console.log(e.target.checked);
         setCheckboxs(newCheckboxs);
     }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import TextInput from "@/app/components/TextInput";
 import Image from "next/image";
 import logo from "@/../public/logo.svg";
@@ -18,21 +17,23 @@ export default function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false); // Loading state
 
     const handleSignUp = async () => {
         if (!name || !email || !password || !confirmPassword) return alert("Preencha todos os campos!");
         if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return alert("E-Mail Inválido");
         if (!/^.{6,10}$/.test(password)) return alert("A senha deve conter de 6 a 10 caracteres");
+        if (password !== confirmPassword) return alert("As senhas não coincidem!");
 
-        if (password != confirmPassword) return alert("As senhas não coincidem!");
-
+        setLoading(true); // Start loading
         const res = await api.createUser({
             name,
             email,
             password,
         });
+        setLoading(false); // Stop loading
 
-        if (!res) return alert("Error ao criar usuário");
+        if (!res) return alert("Erro ao criar usuário");
 
         router.push("/auth/signin");
     };
@@ -76,7 +77,8 @@ export default function SignUp() {
                 </p>
             </div>
             <div className={"flex flex-col w-full items-center mt-4"}>
-                <Button onClick={handleSignUp} color={"green"} label={"Criar Conta"}></Button>
+                <Button onClick={handleSignUp} color={"green"} label={loading ? "Criando..." : "Criar Conta"} disabled={loading}></Button>
+                {loading && <p className={"mt-2 text-cyan-900 text-sm"}>Aguarde, estamos criando sua conta...</p>}
             </div>
         </div>
     );
