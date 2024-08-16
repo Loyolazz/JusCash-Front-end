@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import LeadModal from "./LeadModal";
 import Api from "@/services/api";
 import { Status } from "@/utils/statusEnum";
+import {useSession} from "next-auth/react";
 
 interface IDraggable {
     index: number;
@@ -13,7 +14,8 @@ interface IDraggable {
 }
 
 export default function DraggableRow({ index, id, name, data }: IDraggable) {
-    const api = new Api();
+    const session = useSession();
+    const user: any = session.data;
 
     const [modalOpen, setModalOpen] = useState(false);
     const [cardPosition, setCardPosition] = useState(Status.indexOf(data.status));
@@ -61,9 +63,12 @@ export default function DraggableRow({ index, id, name, data }: IDraggable) {
     };
 
     const updateLead = async (status: number) => {
+        if (!user) return;
+        const api = new Api(user.token);
         await api.updateLead({ id: data.id, status: Status[status] });
     };
 
+    // @ts-ignore
     return (
         <div ref={gridRef} className={`${index % 2 == 0 ? "bg-gray-200" : "bg-white"} grid grid-cols-3 w-full`}>
             <div
@@ -80,7 +85,6 @@ export default function DraggableRow({ index, id, name, data }: IDraggable) {
                     {name}
                 </p>
             </div>
-
             <LeadModal mode="show" modalOpen={modalOpen} setModalOpen={setModalOpen} initiaData={data} />
         </div>
     );

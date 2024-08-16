@@ -6,7 +6,7 @@ export default class Api {
     private api: AxiosInstance;
 
     constructor(
-        token: string = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MywibmFtZSI6IlZpY3RvciIsImVtYWlsIjoidmljdG9yQGdtYWlsLmNvbSIsImV4cCI6MTcyMzc5MjExMX0.t7wFlnyl9V7pZycVI2CLbFwcuLeMakKO_NVMPUH5K5M"
+        token: string = ""
     ) {
         this.api = axios.create({
             baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -35,7 +35,6 @@ export default class Api {
 
     async getLeads() {
         const leads = await this.api.get("/leads");
-
         return leads;
     }
 

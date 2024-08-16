@@ -8,18 +8,26 @@ import logo from "../../../public/logo.svg";
 import DraggabbleRow from "../components/DraggableRow";
 import LeadModal from "../components/LeadModal";
 import Api from "@/services/api";
+import {useSession} from "next-auth/react";
 
-const api = new Api();
 
 export default function Dashboard() {
+
+    const session = useSession();
+    const user: any = session.data;
     const [modalOpen, setModalOpen] = useState(false);
     const [leads, setLeads] = useState([]);
 
     useEffect(() => {
+        if (!user) return;
+        const api = new Api(user.token);
         api.getLeads().then((response) => {
+            if (response.data.error){
+                return
+            }
             setLeads(response.data);
         });
-    }, []);
+    }, [user]);
 
     return (
         <div className={"flex flex-col items-center h-full w-full"}>

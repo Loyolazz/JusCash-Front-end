@@ -8,6 +8,7 @@ import Link from "next/link";
 import LeadModal from "@/app/components/LeadModal";
 import Api from "@/services/api";
 import { useRouter } from "next/navigation";
+import {signIn} from "next-auth/react";
 
 export default function SignIn() {
     const api = new Api();
@@ -19,10 +20,15 @@ export default function SignIn() {
     const handleSignIn = async () => {
         if (!email || !password) return alert("Preencha todos os campos!");
 
-        const session = await api.login({ email, password });
-
-        console.log(session);
-
+        const result = await signIn('credentials', {
+            email: email,
+            password: password,
+            redirect: false,
+        });
+        if (result?.error) {
+            alert('Ocorreu um erro no login :(\nTente mais tarde!');
+            return;
+        }
         router.push("/dashboard");
     };
 

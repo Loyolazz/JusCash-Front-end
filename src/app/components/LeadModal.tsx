@@ -7,6 +7,7 @@ import CheckBox from "@/app/components/CheckBox";
 import Api from "@/services/api";
 import { Status } from "@/utils/statusEnum";
 import { useRouter } from "next/navigation";
+import {useSession} from "next-auth/react";
 
 interface ILeadModal {
     mode: "create" | "show";
@@ -51,10 +52,12 @@ const CHECKBOXES = [
 
 export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }: ILeadModal) {
     const router = useRouter();
+    const session = useSession();
+    const user: any = session.data;
 
-    const [name, setName] = useState(initiaData?.name);
-    const [email, setEmail] = useState(initiaData?.email);
-    const [phone, setPhone] = useState(initiaData?.phone);
+    const [name, setName] = useState(initiaData?.name || '');
+    const [email, setEmail] = useState(initiaData?.email || '');
+    const [phone, setPhone] = useState(initiaData?.phone || '');
 
     const [checkboxs, setCheckboxs] = useState(CHECKBOXES);
 
@@ -92,7 +95,8 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
 
     const handleCreateLead = async () => {
         if (!name || !email || !phone) return alert("Preencha todos os campos!");
-
+        if (!user) return;
+        const api = new Api(user.token);
         const opportunities = checkboxs.map((item) => {
             if (item.checked) {
                 return item.label;
@@ -131,19 +135,19 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
                     <p className={"text-lg text-gray-600 font-medium"}> Dados do Lead </p>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: name, setValue: setName }}
+                        state={{ current: name , setValue: setName }}
                         type={"text"}
                         label={`Nome Completo:`}
                     ></TextInput>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: email, setValue: setEmail }}
+                        state={{ current: email , setValue: setEmail }}
                         type={"email"}
                         label={"Email:"}
                     ></TextInput>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: phone, setValue: setPhone }}
+                        state={{ current: phone , setValue: setPhone }}
                         type={"text"}
                         label={"Telefone:"}
                     ></TextInput>
