@@ -20,7 +20,7 @@ interface ILeadModal {
     };
     modalOpen: boolean;
     setModalOpen: any;
-    setLeads: any;
+    setLeads?: any;
 }
 
 export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen, setLeads }: ILeadModal) {
