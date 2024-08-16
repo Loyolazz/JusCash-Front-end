@@ -37,7 +37,7 @@ export default function Dashboard() {
                 <div className={"py-4 px-8"}>
                     <Button
                         style={"text-[15px] font-light"}
-                        color={"#002355"}
+                        color={"#0066ce"}
                         label={"+ Novo Lead"}
                         onClick={() => setModalOpen(true)}
                     />

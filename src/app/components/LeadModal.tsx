@@ -1,12 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import CheckBox from "@/app/components/CheckBox";
 import Api from "@/services/api";
-import { Status } from "@/utils/statusEnum";
-import { useRouter } from "next/navigation";
+import {Status} from "@/utils/statusEnum";
+import {useRouter} from "next/navigation";
 import {useSession} from "next-auth/react";
 
 interface ILeadModal {
@@ -23,11 +23,6 @@ interface ILeadModal {
 const api = new Api();
 
 const CHECKBOXES = [
-    {
-        id: "1",
-        label: "Todos",
-        checked: false,
-    },
     {
         id: "2",
         label: "Honorários Sucumbenciais",
@@ -50,7 +45,7 @@ const CHECKBOXES = [
     },
 ];
 
-export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }: ILeadModal) {
+export default function LeadModal({mode, initiaData, modalOpen, setModalOpen}: ILeadModal) {
     const router = useRouter();
     const session = useSession();
     const user: any = session.data;
@@ -65,32 +60,33 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
         console.log(name, email, phone);
     }, [name, email, phone]);
 
-    function handleChangeCheckbox(e: any) {
-        if (e.target.id == "1") {
-            setCheckboxs((prevState) => {
-                const newState = prevState.map((item) => {
-                    return {
-                        ...item,
-                        checked: e.target.checked,
-                    };
-                });
+    useEffect(() => {
+        console.log(checkboxs, 'libiricutico');
+    }, [checkboxs]);
 
-                return [...newState];
-            });
-        } else {
-            const newItems = checkboxs.map((item) => {
-                if (item.id === e.target.id) {
-                    return {
-                        ...item,
-                        checked: e.target.checked,
-                    };
-                }
-                return item;
-            });
-            setCheckboxs([...newItems]);
-        }
+    function handleChangeCheckbox(e: any, item: any) {
+        let newCheckboxs = checkboxs.filter((item) => item.id !== e.target.id);
 
-        console.log(checkboxs[0].checked);
+        setCheckboxs([...newCheckboxs, {
+            ...item,
+            checked: e.target.checked
+        }]);
+    }
+
+    function handleSelectAllCheckboxs(e: any) {
+        let newCheckboxs = checkboxs.map((item) => {
+            return {
+                ...item,
+                checkboxs: e.target.checked
+            }
+        });
+
+        setCheckboxs(newCheckboxs);
+    }
+
+    const checkBoxesAll = () => {
+        let checkboxzs = checkboxs.filter((item) => item.checked === false)
+        return checkboxzs.length < 0 ;
     }
 
     const handleCreateLead = async () => {
@@ -120,7 +116,7 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
             className={
                 "w-screen h-screen absolute top-0 z-10 flex backdrop-blur-sm bg-black bg-opacity-30 justify-center items-center"
             }
-            style={{ display: modalOpen ? "flex" : "none" }}
+            style={{display: modalOpen ? "flex" : "none"}}
         >
             <div
                 className={
@@ -135,25 +131,33 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
                     <p className={"text-lg text-gray-600 font-medium"}> Dados do Lead </p>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: name , setValue: setName }}
+                        state={{current: name, setValue: setName}}
                         type={"text"}
                         label={`Nome Completo:`}
                     ></TextInput>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: email , setValue: setEmail }}
+                        state={{current: email, setValue: setEmail}}
                         type={"email"}
                         label={"Email:"}
                     ></TextInput>
                     <TextInput
                         enable={mode == "create" ? true : false}
-                        state={{ current: phone , setValue: setPhone }}
+                        state={{current: phone, setValue: setPhone}}
                         type={"text"}
                         label={"Telefone:"}
                     ></TextInput>
                 </div>
                 <div className={"w-full flex flex-col"}>
                     Oportunidades
+                    <CheckBox
+                        enable={mode == "create" ? true : false}
+                        id={1}
+                        label={'Todos'}
+                        checked={checkBoxesAll()}
+                        onChange={handleChangeCheckbox}
+                    />
+
                     {checkboxs.map((checkbox, index) => {
                         return (
                             <CheckBox
@@ -162,7 +166,7 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
                                 id={checkbox.id}
                                 label={checkbox.label}
                                 checked={checkbox.checked}
-                                onChange={handleChangeCheckbox}
+                                onChange={(e: any) => handleChangeCheckbox(e, checkbox)}
                             />
                         );
                     })}
@@ -181,7 +185,7 @@ export default function LeadModal({ mode, initiaData, modalOpen, setModalOpen }:
                     <div className={"flex flex-col w-full items-center mt-4"}>
                         <Button
                             enable={mode == "create" ? true : false}
-                            color={"#002355"}
+                            color={"#0066ce"}
                             border
                             label={"Salvar"}
                             onClick={handleCreateLead}
