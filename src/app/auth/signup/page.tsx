@@ -21,6 +21,8 @@ export default function SignUp() {
 
     const handleSignUp = async () => {
         if (!name || !email || !password || !confirmPassword) return alert("Preencha todos os campos!");
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return alert("E-Mail Inválido");
+        if (!/^.{6,10}$/.test(password)) return alert("A senha deve conter de 6 a 10 caracteres");
 
         if (password != confirmPassword) return alert("As senhas não coincidem!");
 
@@ -48,13 +50,20 @@ export default function SignUp() {
                     type={"text"}
                     label={"Seu nome completo:"}
                 ></TextInput>
-                <TextInput state={{ current: email, setValue: setEmail }} type={"email"} label={"E-mail:"}></TextInput>
                 <TextInput
+                    regex={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
+                    state={{ current: email, setValue: setEmail }}
+                    type={"email"}
+                    label={"E-mail:"}
+                ></TextInput>
+                <TextInput
+                    regex={/^.{6,10}$/}
                     state={{ current: password, setValue: setPassword }}
                     type={"password"}
                     label={"Senha:"}
                 ></TextInput>
                 <TextInput
+                    regex={/^.{6,10}$/}
                     state={{ current: confirmPassword, setValue: setConfirmPassword }}
                     type={"password"}
                     label={"Confirme sua senha:"}

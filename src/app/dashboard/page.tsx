@@ -8,11 +8,9 @@ import logo from "../../../public/logo.svg";
 import DraggabbleRow from "../components/DraggableRow";
 import LeadModal from "../components/LeadModal";
 import Api from "@/services/api";
-import {useSession} from "next-auth/react";
-
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
-
     const session = useSession();
     const user: any = session.data;
     const [modalOpen, setModalOpen] = useState(false);
@@ -22,8 +20,8 @@ export default function Dashboard() {
         if (!user) return;
         const api = new Api(user.token);
         api.getLeads().then((response) => {
-            if (response.data.error){
-                return
+            if (response.data.error) {
+                return;
             }
             setLeads(response.data);
         });
@@ -50,11 +48,11 @@ export default function Dashboard() {
                 </div>
 
                 {leads.map((lead: any, index) => {
-                    return <DraggabbleRow data={lead} key={lead} index={index} id={1} name={lead.name} />;
+                    return <DraggabbleRow data={lead} key={index} index={index} id={1} name={lead.name} />;
                 })}
             </div>
 
-            <LeadModal mode="create" modalOpen={modalOpen} setModalOpen={setModalOpen} />
+            <LeadModal setLeads={setLeads} mode="create" modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </div>
     );
 }

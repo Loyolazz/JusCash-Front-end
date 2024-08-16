@@ -10,7 +10,7 @@ interface ICheckBox {
 }
 
 export default function CheckBox({ enable = true, label, name, id, checked, onChange }: any) {
-    console.log(checked, 'função check')
+   // console.log(checked, 'função check')
     return (
         <div className={"flex flex-row items-center gap-1 my-0.5"}>
             <input disabled={!enable} type="checkbox" id={id} name={name} value={checked} onChange={onChange} checked={checked} />

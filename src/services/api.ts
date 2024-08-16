@@ -5,9 +5,7 @@ import axios, { AxiosInstance } from "axios";
 export default class Api {
     private api: AxiosInstance;
 
-    constructor(
-        token: string = ""
-    ) {
+    constructor(token: string = "") {
         this.api = axios.create({
             baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
             headers: {
@@ -20,7 +18,7 @@ export default class Api {
     }
 
     async createLead(leadData: CreateLead): Promise<Lead | null> {
-        const lead: Lead = await this.api.post(
+        const response = await this.api.post(
             "/lead",
             {
                 ...leadData,
@@ -30,7 +28,9 @@ export default class Api {
             }
         );
 
-        return lead;
+        if (!response.data) throw new Error("Erro ao criar o lead");
+
+        return response.data;
     }
 
     async getLeads() {
@@ -52,7 +52,7 @@ export default class Api {
         return res;
     }
 
-    async updateLead (data: {id: number, status: string}) {
-        await this.api.put('/lead', data);
+    async updateLead(data: { id: number; status: string }) {
+        await this.api.put("/lead", data);
     }
 }

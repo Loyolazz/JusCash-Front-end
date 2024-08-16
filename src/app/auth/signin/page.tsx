@@ -5,28 +5,32 @@ import Image from "next/image";
 import logo from "@/../public/logo.svg";
 import Button from "@/app/components/Button";
 import Link from "next/link";
-import LeadModal from "@/app/components/LeadModal";
-import Api from "@/services/api";
 import { useRouter } from "next/navigation";
-import {signIn} from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 export default function SignIn() {
-    const api = new Api();
     const router = useRouter();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false); // Loading state
 
     const handleSignIn = async () => {
         if (!email || !password) return alert("Preencha todos os campos!");
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return alert("E-Mail Inválido");
+        if (!/^.{6,10}$/.test(password))
+            return alert("A senha deve conter de 6 a 10 caracteres");
 
-        const result = await signIn('credentials', {
+        setLoading(true); // Start loading
+        const result = await signIn("credentials", {
             email: email,
             password: password,
             redirect: false,
         });
+        setLoading(false); // Stop loading
+
         if (result?.error) {
-            alert('Ocorreu um erro no login :(\nTente mais tarde!');
+            alert("Ocorreu um erro no login :(\nTente mais tarde!");
             return;
         }
         router.push("/dashboard");
@@ -40,12 +44,18 @@ export default function SignIn() {
         >
             <Image src={logo} alt="logo" width={300} />
             <div className={"w-full"}>
-                <TextInput state={{ current: email, setValue: setEmail }} type={"email"} label={"E-mail:"}></TextInput>
                 <TextInput
+                    regex={/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i}
+                    state={{ current: email, setValue: setEmail }}
+                    type={"email"}
+                    label={"E-mail:"}
+                />
+                <TextInput
+                    regex={/^.{6,10}$/}
                     state={{ current: password, setValue: setPassword }}
                     type={"password"}
                     label={"Senha:"}
-                ></TextInput>
+                />
             </div>
             <div className={"w-full flex flex-col"}>
                 <p className={"self-end text-cyan-900 text-sm"}>
@@ -54,7 +64,13 @@ export default function SignIn() {
                 </p>
             </div>
             <div className={"flex flex-col w-full items-center mt-4"}>
-                <Button color={"green"} label={"Entrar"} onClick={handleSignIn}></Button>
+                <Button
+                    color={"green"}
+                    label={loading ? "Entrando..." : "Entrar"}
+                    onClick={handleSignIn}
+                    disabled={loading}
+                />
+                {loading && <p className={"mt-2 text-cyan-900 text-sm"}>Aguarde, estamos processando seu login...</p>}
             </div>
         </div>
     );
